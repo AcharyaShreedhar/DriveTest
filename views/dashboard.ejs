@@ -1,0 +1,43 @@
+<%- include('./partials/authorinfo.ejs')%>
+
+<%- include('./partials/header.ejs')%>
+
+<body>
+  <section class="info_section title">
+    <h1>Welcome to the Dashboard of DriveTest !!</h1>
+    <p class="subtitle">DriveTest Booking Kiosk</p>
+  </section>
+  <!-- Add the toast container -->
+  <div id="toast-container"></div>
+  <% if (isAuthenticated) { %>
+  <%- include('./partials/authnavbar.ejs') %>
+  <% } else if(isAdmin) { %>
+  <%- include('./partials/adminnavbar.ejs') %>
+  <% } else if(isExaminer) { %>
+  <%- include('./partials/examinernavbar.ejs') %>
+  <% }
+   else { %>
+  <%- include('./partials/navbar.ejs') %>
+  <% } %>
+  <%- include('./partials/footer.ejs')%>
+</body>
+<script>
+  // Function to show the toast message
+  function showToast(message) {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.innerText = message;
+    toastContainer.style.display = 'block';
+    setTimeout(() => {
+      toastContainer.style.display = 'none';
+    }, 5000); // Hide the toast after 3 seconds (adjust as needed)
+  }
+</script>
+
+<% if (loginSuccess) { %>
+<script>
+  // Show the toast if registration was successful
+  showToast('Login successful. Welcome to the Dashboard of DriveTest');
+</script>
+<% } %>
+
+</html>

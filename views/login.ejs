@@ -1,0 +1,71 @@
+<%- include('./partials/authorinfo.ejs')%>
+
+<%- include('./partials/header.ejs')%>
+
+<body>
+  <div id="toast-container"></div>
+  <section class="welcome">
+    <h1>Welcome to the Login page of DriveTest !!</h1>
+  </section>
+
+  <section class="center">
+    <div class="container">
+      <div class="form-container" id="login-form-container">
+        <fieldset>
+          <legend>Login</legend>
+          <form id="login-form" action="/login" method='post'>
+            <div class="mb-3">
+              <label for="username" class="form-label">User Name</label>
+              <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" id="submit" class="btn btn-primary w-25">Login</button>
+          </form>
+        </fieldset>
+
+        <div class="toggle-form mt-3">
+          <a href="signup">Don't have an account? Sign up here</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('./partials/navbar.ejs')%>
+  <%- include('./partials/footer.ejs')%>
+</body>
+<script>
+  // Function to show the toast message
+  function showToast(message, color, top) {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.innerText = message;
+    toastContainer.style.display = 'block';
+    toastContainer.style.color = color;
+    toastContainer.style.marginTop = top;
+    setTimeout(() => {
+      toastContainer.style.display = 'none';
+    }, 5000); // Hide the toast after 3 seconds (adjust as needed)
+  }
+</script>
+<% if (existingUser!=undefined) { %>
+<script>
+  // Show the toast if user already exists
+  showToast('User already Exist. Please Login', "red", "-30px");
+</script>
+<% } %>
+<% if (registrationSuccess) { %>
+<script>
+  // Show the toast if registration was successful
+  showToast('Registration Successful. Please Login', "green", "-30px");
+</script>
+<% } %>
+<% if (loginError) { %>
+<script>
+  // Show the toast if Login was unsuccessful
+  showToast('Login Unsuccessful. Please Try Again', "red", "-30px");
+</script>
+<% } %>
+
+</html>

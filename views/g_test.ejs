@@ -1,0 +1,158 @@
+<%- include('./partials/authorinfo.ejs')%>
+<%- include('./partials/header.ejs')%>
+
+<body>
+  <section class="welcome">
+    <h1>Welcome to the G_TEST of DriveTest !!</h1>
+    <p class="subtitle">Please Verify your Information</p>
+  </section>
+  <!-- Add the toast container -->
+  <div id="toast-container"></div>
+  <section class="center search-data">
+    <% if (typeof userData === 'string') { %>
+    <section class="no-user-found">
+      <h1><%= userData %></h1>
+    </section>
+    <% } else if (typeof userData === 'undefined' || userData === null) { %>
+    <% } else { %>
+    <form action="/updateCarInfo" method="post">
+      <fieldset class="mt-3">
+        <legend>Personal Information</legend>
+        <div class="mb-3">
+          <label for="first_name" class="form-label">First Name</label>
+          <input type="text" class="form-control" id="first_name" name="first_name" value="<%= userData.firstName %>" readonly disabled>
+        </div>
+        <div class="mb-3">
+          <label for="last_name" class="form-label">Last Name</label>
+          <input type="text" class="form-control" id="last_name" name="last_name" value="<%= userData.lastName %>" readonly disabled>
+        </div>
+        <div class="mb-3">
+          <label for="license_number" class="form-label">License Number</label>
+          <input type="text" class="form-control" id="license_number" name="license_number" value="<%= userData.licenseNo %>" readonly disabled>
+        </div>
+        <div class="mb-3">
+          <label for="age" class="form-label">Age</label>
+          <input type="number" class="form-control" id="age" name="age" value="<%= userData.age %>" readonly disabled>
+        </div>
+      </fieldset>
+      <fieldset class="mb-3">
+        <legend>Car Information</legend>
+        <div class="mb-3">
+          <label for="make" class="form-label">Make</label>
+          <input type="text" class="form-control" id="make" name="make" value="<%= userData?.carDetails?.make %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="model" class="form-label">Model</label>
+          <input type="text" class="form-control" id="model" name="model" value="<%= userData?.carDetails?.model %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="year" class="form-label">Year</label>
+          <input type="text" class="form-control" id="year" name="year" min="1900" max="<%= new Date().getFullYear() %>" placeholder="YYYY" value="<%= userData?.carDetails?.year %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="plat_no" class="form-label">Plat Number</label>
+          <input type="text" class="form-control" id="plat_no" name="plat_no" value="<%= userData?.carDetails?.platNo %>" required>
+        </div>
+
+      </fieldset>
+      <button type="submit" id="submit" class="btn btn-primary w-25"> Update </button>
+    </form>
+    <% } %>
+  </section>
+  </section>
+  <section class="center">
+
+
+    <% if (appointmentInfo && appointmentInfo._id) { %>
+    <div>
+      <h1 class="information mb-5">Appointment Details:-</h1>
+      <div class="mb-3 col-sm-7 form-item">
+        <label for="date" class="form-label">Appointment Date </label>
+        <input type="text" class="form-control" id="date" name="date" value="<%= appointmentInfo.date %>" required disabled>
+      </div>
+
+      <div class="mb-3 col-sm-7 form-item">
+        <label for="time" class="form-label">Time </label>
+        <input type="text" class="form-control" id="time" name="time" value="<%= appointmentInfo.time %>" required disabled>
+      </div>
+    </div>
+
+    <% } else { %>
+    <div>
+      <form action="/bookAppointmentForG" method="post" enctype="application/x-www-form-urlencoded" name="book_appointment_form" id="book_appointment_form">
+        <fieldset>
+          <legend>Book Appointment</legend>
+          <div class="mb-5">
+            <label for="date" class="form-label">Appointment Date:</label>
+            <input type="text" class="form-control" id="date" name="date" required readonly>
+          </div>
+          <div class="mb-5">
+            <div id="time-slots" class="time-grid">
+              <!-- Time slots will be dynamically generated here -->
+            </div>
+
+          </div>
+          <div style="background-color:none; color:#ccd0d2; opacity: 0;" id="time" class="mb-3 hidden">
+            <label style="background-color:none; color:#ccd0d2 ;border:0px" for="appointmenttime">Appointment Time:</label>
+            <input style="background-color:none; color:#ccd0d2;border:0px" type="text" id="appointmenttime" name="appointmenttime">
+            <input style="background-color:none; color:#ccd0d2;border:0px" type="text" id="appointmentId" name="appointmentId">
+          </div>
+          <button type="submit" id="submitbtn" class="btn btn-primary w-25">Book Appointment</button>
+
+        </fieldset>
+
+      </form>
+
+    </div>
+    <% } %>
+  </section>
+  <% if (isAuthenticated) { %>
+  <%- include('./partials/authnavbar.ejs') %>
+  <% } else if(isAdmin) { %>
+  <%- include('./partials/adminnavbar.ejs') %>
+  <% } else { %>
+  <%- include('./partials/navbar.ejs') %>
+  <% } %>
+  <%- include('./partials/footer.ejs')%>
+</body>
+<script>
+  // Function to show the toast message
+  function showToast(message, color, top) {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.innerText = message;
+    toastContainer.style.display = 'block';
+    toastContainer.style.color = color;
+    toastContainer.style.marginTop = top;
+    setTimeout(() => {
+      toastContainer.style.display = 'none';
+    }, 5000); // Hide the toast after 3 seconds (adjust as needed)
+  }
+</script>
+<% if (userUpdateSuccess) { %>
+<script>
+  // Show the toast if User Info was successfully updated
+  showToast('User Info is successfully Updated.', "green", "-200px");
+</script>
+<% } %>
+<% if (carInfoUpdateSuccess) { %>
+<script>
+  // Show the toast if car Information was successfully updated
+  showToast('Car Information is successfully Updated.', "green", "-200px");
+</script>
+<% } %>
+<% if (carInfoUpdateFailure) { %>
+<script>
+  // Show the toast if car Information update failed
+  showToast('Sorry Car Information is not Updated. Please Try Again', "red", "-200px");
+</script>
+<% } %>
+<% if (appointmentBookingSuccess) { %>
+<script>
+  // Show the toast if User Info was successfully updated
+  showToast('Appointment is Booked Successfully.', "green", "-150px");
+</script>
+<% } %>
+<script src="/node_modules/flatpickr/dist/flatpickr.js"></script>
+<script type="module" src="scripts/availabletimeslot.js"></script>
+
+</html>

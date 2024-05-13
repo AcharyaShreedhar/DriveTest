@@ -1,0 +1,132 @@
+<%- include('./partials/authorinfo.ejs')%>
+<%- include('./partials/header.ejs')%>
+
+<body>
+
+  <!-- Add the toast container -->
+  <div id="toast-container"></div>
+  <section class="appointment_list center" style="width:1200px">
+    <div class="list-header">
+      <h2>Examiner List</h2>
+      <div class="filter-container">
+        <label class="filter-label" for="testTypeFilter">Test Type:</label>
+        <select id="testTypeFilter">
+          <option value="all">All</option>
+          <option value="G2">G2</option>
+          <option value="G">G</option>
+        </select>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('name')">Name &#9660;&#9650;</th>
+          <th>License Number</th>
+          <th>Test Type</th>
+          <th onclick="sortTable('appointmentDate')">Appointment Date &#9660;&#9650;</th>
+          <th>Appointment Time</th>
+          <th>Test Result</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <!-- Table rows will be added dynamically using JavaScript -->
+      </tbody>
+    </table>
+  </section>
+
+  <% if (isAuthenticated) { %>
+  <%- include('./partials/authnavbar.ejs') %>
+  <% } else if (isAdmin) { %>
+  <%- include('./partials/adminnavbar.ejs') %>
+  <% } else if (isExaminer) { %>
+  <%- include('./partials/examinernavbar.ejs') %>
+  <% } else { %>
+  <%- include('./partials/navbar.ejs') %>
+  <% } %>
+  <%- include('./partials/footer.ejs') %>
+</body>
+<script>
+  // Function to show the toast message
+  function showToast(message, color, top) {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.innerText = message;
+    toastContainer.style.display = 'block';
+    toastContainer.style.color = color;
+    toastContainer.style.marginTop = top;
+    setTimeout(() => {
+      toastContainer.style.display = 'none';
+    }, 5000); // Hide the toast after 5 seconds (adjust as needed)
+  }
+
+  // Fetch drivers' data from the server
+
+  const drivers = JSON.parse('<%- drivers %>');
+
+
+  let currentSortColumn = null;
+  let currentSortDirection = "asc";
+
+  const testTypeFilter = document.getElementById("testTypeFilter");
+  const userTableBody = document.getElementById("userTableBody");
+
+  function updateTable(filter) {
+    console.log("Filter value:", filter);
+    userTableBody.innerHTML = "";
+    console.log("sdfsfdsd", drivers)
+
+    const filteredData = filter === "all" ? drivers : drivers.filter(user => {
+      console.log("User testType:", user.testType);
+      console.log("Filter value:", filter);
+      return user.testType === filter;
+    });
+
+    const sortedData = filteredData.sort((a, b) => {
+      if (currentSortColumn === 'name') {
+        const aValue = a.username;
+        const bValue = b.username;
+        return currentSortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      } else if (currentSortColumn === 'appointmentDate') {
+        const aValue = a.appointmentId.date;
+        const bValue = b.appointmentId.date;
+        return currentSortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      }
+      return 0;
+    });
+
+    sortedData.forEach(user => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+      <td><a href="/driverDetails?name=${encodeURIComponent(user.username)}">${user.username}</a></td>
+        <td>${user.licenseNo}</td>
+        <td>${user.testType}</td>
+        <td>${user.appointmentId ? user.appointmentId.date : 'N/A'}</td>
+    <td>${user.appointmentId ? user.appointmentId.time : 'N/A'}</td>
+        <td>
+  ${user.isPassed === false ? 'Fail' : (user.isPassed === true ? 'Pass' : 'N/A')}
+</td>
+
+        <td>${user.comment?user.comment:"N/A"}</td>
+      `;
+      userTableBody.appendChild(row);
+    });
+  }
+
+  function sortTable(column) {
+    if (currentSortColumn === column) {
+      currentSortDirection = currentSortDirection === "asc" ? "desc" : "asc";
+    } else {
+      currentSortColumn = column;
+      currentSortDirection = "asc";
+    }
+    updateTable(testTypeFilter.value);
+  }
+
+  testTypeFilter.addEventListener("change", () => {
+    updateTable(testTypeFilter.value);
+  });
+
+  updateTable("all");
+</script>
+
+</html>

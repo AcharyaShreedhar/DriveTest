@@ -1,0 +1,99 @@
+<%- include('./partials/authorinfo.ejs')%>
+
+<%- include('./partials/header.ejs')%>
+
+<body>
+  <section class="welcome">
+    <h1>Welcome to the Sign Up page of DriveTest !!</h1>
+  </section>
+  <!-- Add the toast container -->
+  <div id="toast-container"></div>
+  <section class="center">
+    <div class="container">
+      <div class="form-container" id="signup-form-container">
+        <legend>Sign Up</legend>
+        <form id="signup-form" action="/signup" method='post'>
+          <fieldset class="mb-3">
+            <div class="mb-3">
+              <label for="signup_user_name" class="form-label">User Name</label>
+              <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="signup_password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3">
+              <label for="signup_password" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+            </div>
+
+          </fieldset>
+          <div class="dropdown mb-3 w-100">
+            <button class="btn btn-secondary dropdown-toggle w-100" style="text-align: left;" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="userTypeDropdownButton">
+              User Type
+            </button>
+            <ul class="dropdown-menu w-100">
+              <li><a class="dropdown-item" href="#" onclick="updateUserType('Driver')">Driver</a></li>
+              <li><a class="dropdown-item" href="#" onclick="updateUserType('Examiner')">Examiner</a></li>
+              <li><a class="dropdown-item" href="#" onclick="updateUserType('Admin')">Admin</a></li>
+            </ul>
+            <input type="hidden" id="userType" name="userType" value="Driver">
+          </div>
+          <button type="submit" id="submit" class="btn btn-primary w-25">Sign Up</button>
+        </form>
+        <div class="toggle-form mt-3">
+          <a href="login">Already have an account? Login here</a>
+        </div>
+      </div>
+  </section>
+
+  <%- include('./partials/navbar.ejs')%>
+  <%- include('./partials/footer.ejs')%>
+</body>
+<script>
+  function updateUserType(userType) {
+    const dropdownButton = document.getElementById('userTypeDropdownButton');
+    const hiddenInput = document.getElementById('userType');
+
+    dropdownButton.textContent = userType;
+    hiddenInput.value = userType;
+  }
+  // Set the default value to 'Driver' and update the dropdown button
+  document.addEventListener('DOMContentLoaded', function() {
+    const defaultUserType = 'Driver';
+    updateUserType(defaultUserType);
+
+    // Add event listener to the form submission
+    const signupForm = document.getElementById('signup-form');
+    signupForm.addEventListener('submit', function(event) {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+
+      // Check if the password and confirm password match
+      if (password !== confirmPassword) {
+        event.preventDefault(); // Prevent form submission
+        showToast('Passwords do not match. Please try again!!', "red", "-150px");
+      }
+    });
+  });
+
+  // Function to show the toast message
+  function showToast(message, color, top) {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.innerText = message;
+    toastContainer.style.display = 'block';
+    toastContainer.style.color = color;
+    toastContainer.style.marginTop = top;
+    setTimeout(() => {
+      toastContainer.style.display = 'none';
+    }, 5000); // Hide the toast after 3 seconds (adjust as needed)
+  }
+</script>
+<% if (signUpError) { %>
+<script>
+  // Show the toast if registration was unsuccessful
+  showToast('Registration Unsuccessful. Please try again', "red", "-150px");
+</script>
+<% } %>
+
+</html>

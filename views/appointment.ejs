@@ -1,0 +1,40 @@
+<%- include('./partials/authorinfo.ejs')%>
+<%- include('./partials/header.ejs')%>
+
+<body>
+  <section class="welcome">
+    <h1>Welcome to the Appointment Page</h1>
+  </section>
+  <section class="center">
+    <div class="container">
+      <div class="form-container" id="login-form-container">
+        <fieldset>
+          <legend>Schedule Appointment</legend>
+          <form action="/submit-appointment" method="POST">
+            <div class="mb-5">
+              <label for="date" class="form-label">Appointment Date:</label>
+              <input type="text" class="form-control" id="date" name="date" required readonly>
+            </div>
+            <div class="mb-5">
+              <div id="time-slots" class="time-grid">
+                <!-- Time slots will be dynamically generated here -->
+              </div>
+
+            </div>
+            <div id="time" class="mb-3 hidden">
+              <label for="appointmenttime" class="form-label">Appointment Time:</label>
+              <input type="text" class="form-control" id="appointmenttime" name="appointmenttime">
+            </div>
+            <button type="submit" class="btn btn-primary w-25">Submit</button>
+          </form>
+        </fieldset>
+      </div>
+    </div>
+  </section>
+  <%- include('./partials/navbar.ejs')%>
+  <%- include('./partials/footer.ejs')%>
+</body>
+<script src="/node_modules/flatpickr/dist/flatpickr.js"></script>
+<script type="module" src="scripts/timeslot.js"></script>
+
+</html>

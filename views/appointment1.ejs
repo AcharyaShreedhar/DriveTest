@@ -1,0 +1,128 @@
+<%- include('./partials/authorinfo.ejs')%>
+<%- include('./partials/header.ejs')%>
+
+<body>
+  <section class="welcome">
+    <h1>Create Appointment Slots</h1>
+  </section>
+  <!-- Add the toast container -->
+  <div id="toast-container"></div>
+
+  <section class="center">
+    <% if (appointments && appointments.length > 0) { %>
+
+    <div class="container">
+      <fieldset>
+        <legend>Existing Appointments</legend>
+        <ul>
+          <% for (const appointment of appointments) { %>
+          <li class="mb-3">
+            <strong>Date:</strong> <%= appointment.date.toDateString() %> | <strong>Time:</strong> <%= appointment.time %>
+            <!-- Add delete button for each appointment -->
+            <form id="deleteForm-<%= appointment._id %>" style="display: inline;">
+              <button type="button" class="btn btn-danger ml-2" onclick="deleteAppointment('<%= appointment._id %>')">Delete</button>
+            </form>
+          </li>
+          <% } %>
+        </ul>
+      </fieldset>
+    </div>
+
+    <% } %>
+    <div class="container">
+      <div class="form-container" id="login-form-container">
+        <fieldset>
+          <legend>Create Slots</legend>
+          <form action="/createAppointmentSlot" method="POST">
+            <div class="mb-3">
+              <label for="date" class="form-label">Date:</label>
+              <input type="date" class="form-control" id="date" name="date" required readonly>
+            </div>
+            <div class="mb-5">
+              <label for="time-slots">Pick Time Slots:</label>
+              <div id="time-slots" class="time-grid">
+                <!-- Time slots will be dynamically generated here -->
+                <button type="button" class="time-slot btn">10:00 AM</button>
+                <button type="button" class="time-slot btn">11:00 AM</button>
+
+                <button type="button" class="time-slot btn">01:00 PM</button>
+                <button type="button" class="time-slot btn">02:00 PM</button>
+                <!-- Add more buttons for other time slots as needed -->
+              </div>
+              <br>
+              <small>These time slots are defined as per the DriveTest policy.These are subject to change</small>
+            </div>
+            <div id="time" class="mb-3 hidden">
+              <label for="appointmenttime" class="form-label">Appointment Time:</label>
+              <input type="text" class="form-control" id="appointmenttime" name="appointmenttime">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </fieldset>
+      </div>
+    </div>
+  </section>
+
+  <% if (isAuthenticated) { %>
+  <%- include('./partials/authnavbar.ejs') %>
+  <% } else if(isAdmin) { %>
+  <%- include('./partials/adminnavbar.ejs') %>
+  <% } else { %>
+  <%- include('./partials/navbar.ejs') %>
+  <% } %>
+  <%- include('./partials/footer.ejs')%>
+</body>
+<script>
+  function deleteAppointment(appointmentId) {
+    const confirmation = confirm("Are you sure you want to delete this appointment?");
+    if (!confirmation) {
+      return; // User cancelled the deletion
+    }
+
+    fetch(`/deleteAppointment/${appointmentId}`, {
+        method: 'DELETE',
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data.message); // Success message
+        location.reload(); // Refresh the page to update the appointment list
+      })
+      .catch(error => {
+        console.error('Error deleting appointment:', error);
+        alert('An error occurred while deleting the appointment.');
+      });
+  }
+
+  // Function to show the toast message
+  function showToast(message, color, top) {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.innerText = message;
+    toastContainer.style.display = 'block';
+    toastContainer.style.color = color;
+    toastContainer.style.marginTop = top;
+    setTimeout(() => {
+      toastContainer.style.display = 'none';
+    }, 5000); // Hide the toast after 3 seconds (adjust as needed)
+  }
+</script>
+<% if (slotAlreadyExist) { %>
+<script>
+  showToast('The appointment slot already exists.', "red", "-150px");
+</script>
+<% } %>
+<% if (slotCreationSuccess) { %>
+<script>
+  // Show the toast if slot creation was successfully updated
+  showToast('Appointment Slot is successfully Created.', "green", "-150px");
+</script>
+<% } %>
+<% if (slotCreationFailure) { %>
+<script>
+  // Show the toast if slot creation was failed
+  showToast('Sorry Slot creation failed. Please Try Again', "red", "-150px");
+</script>
+<% } %>
+<script src="/node_modules/flatpickr/dist/flatpickr.js"></script>
+<script type="module" src="scripts/timeslot.js"></script>
+
+</html>

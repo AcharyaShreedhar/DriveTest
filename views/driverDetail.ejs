@@ -1,0 +1,67 @@
+<%- include('./partials/authorinfo.ejs')%>
+<%- include('./partials/header.ejs')%>
+
+<body>
+  <section class="welcome">
+    <h1> <%= driverData.firstName %> <%= driverData.lastName %>'s Details</h1>
+  </section>
+  <div id="toast-container"></div>
+  <section class="center">
+    <div class="appointment-details">
+      <h2>Driver Details:</h2>
+      <div>
+        <p><strong>Name:</strong> <%= driverData.firstName %> <%= driverData.lastName %></p>
+        <p><strong>License Number:</strong> <%= driverData.licenseNo %></p>
+        <p><strong>Test Type:</strong> <%= driverData.testType %></p>
+        <h4>Car Details</h4>
+        <p><strong>Make:</strong> <%= driverData.carDetails.make %> <%= driverData.lastName %></p>
+        <p><strong>Model:</strong> <%= driverData.carDetails.model %></p>
+        <p><strong>Year:</strong> <%= driverData.carDetails.year %></p>
+        <p><strong>Plat No:</strong> <%= driverData.carDetails.platNo %></p>
+        <p><strong>Appointment Date:</strong> <%= appointmentInfo && appointmentInfo.date ? appointmentInfo.date : 'N/A' %></p>
+        <p><strong>Appointment Time:</strong> <%= appointmentInfo && appointmentInfo.time ? appointmentInfo.time : 'N/A' %></p>
+        <form action="/updateResult/<%= driverData.username %>" method="post" id="gradeForm">
+          <label for="grade" class="form-label">Test Result:</label>
+          <label for="pass" class="form-label">
+            <input type="radio" id="pass" name="grade" value="Pass">
+            Pass
+          </label>
+          <label for="fail" class="form-label">
+            <input type="radio" id="fail" name="grade" value="Fail">
+            Fail
+          </label>
+          <br>
+          <label for="comment" class="form-label">Comment:</label>
+          <textarea id="comment" class="form-control" name="comment" rows="4" cols="50"></textarea>
+          <br>
+          <button type="submit" class="btn btn-primary w-25">Submit</button>
+        </form>
+      </div>
+    </div>
+  </section>
+  <% if (isAuthenticated) { %>
+  <%- include('./partials/authnavbar.ejs') %>
+  <% } else if (isAdmin) { %>
+  <%- include('./partials/adminnavbar.ejs') %>
+  <% } else if (isExaminer) { %>
+  <%- include('./partials/examinernavbar.ejs') %>
+  <% } else { %>
+  <%- include('./partials/navbar.ejs') %>
+  <% } %>
+  <%- include('./partials/footer.ejs')%>
+</body>
+<script>
+  // Function to show the toast message
+  function showToast(message, color, top) {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.innerText = message;
+    toastContainer.style.display = 'block';
+    toastContainer.style.color = color;
+    toastContainer.style.marginTop = top;
+    setTimeout(() => {
+      toastContainer.style.display = 'none';
+    }, 5000); // Hide the toast after 5 seconds (adjust as needed)
+  }
+</script>
+
+</html>

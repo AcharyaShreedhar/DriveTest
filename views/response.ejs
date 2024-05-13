@@ -1,0 +1,32 @@
+<%- include('./partials/authorinfo.ejs')%>
+
+<%- include('./partials/header.ejs')%>
+
+<body>
+
+  <section class="welcome">
+    <h1>Thank you. Your request is submitted successfully !!</h1>
+  </section>
+  <section class="center">
+    <h2>User Information:</h2>
+    <ul class="response_list">
+      <h2>Personal Information</h2>
+      <hr />
+      <li>First Name: <%= user.firstName %></li>
+      <li>Last Name: <%= user.lastName %></li>
+      <li>License Number: <%= user.licenseNo %></li>
+      <li>Age: <%= user.age %></li>
+      <li>Date of Birth: <%= user.birthDate %></li>
+      <h2>Car Information</h2>
+      <hr />
+      <li>Make: <%= user.carDetails.make %></li>
+      <li>Model: <%= user.carDetails.model %></li>
+      <li>Year: <%= user.carDetails.year %></li>
+      <li>Phone: <%= user.carDetails.platNo %></li>
+    </ul>
+  </section>
+  <%- include('./partials/navbar.ejs')%>
+  <%- include('./partials/footer.ejs')%>
+</body>
+
+</html>
